@@ -16,6 +16,9 @@ print "mat:\n",mat
 
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1, projection='3d')
-surf = ax.plot_surface(X,Y,mat)
+ax.set_xticks([0, 1, 2, 3, 4, 5])
+ax.set_xticklabels(['1', '2', '4', '8', '16', '32', '64', '128', '256'])
+
+surf = ax.plot_surface(X, Y, mat)
 #ax.set_xscale('log', basex=2)
 plt.show()
