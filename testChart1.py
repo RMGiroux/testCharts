@@ -4,6 +4,7 @@ from matplotlib import cm
 import numpy as np
 import sys
 import os
+import re
 
 def linearInterp1DintoTarget(target, source, factor=5):
     """Interpolates the 'source' vector linearly into the 'target' vector, piece-wise,
@@ -87,9 +88,12 @@ except OSError:
 
 with open("processed_test_data.out") as f:
     for line in f:
-        fields = line.split(",")
-        values[int(fields[0])][int(fields[1])][int(fields[2])] \
-            = fields[3]
+        line = re.sub(r"\s*#.*", '', line)
+
+        if re.search(',', line):
+            fields = line.split(",")
+            values[int(fields[0])][int(fields[1])][int(fields[2])] \
+                = fields[3]
 
 for dataset in values.keys():
     print "D: %s" % dataset
@@ -129,7 +133,7 @@ for dataset in values.keys():
 
     ax.set_xlabel("Temporal Locality", fontsize=8)
     ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    ax.set_xticklabels(['$-2^{%d}$' % i for i in range(0, 9)])
+    ax.set_xticklabels(['$2^{-%d}$' % i for i in range(0, 9)])
 
     ax.set_ylabel("Subsystem Size", fontsize=8)
     ax.set_yticks(Y)
