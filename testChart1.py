@@ -1,5 +1,6 @@
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import numpy as np
 import sys
 
@@ -38,10 +39,19 @@ for dataset in values.keys():
 
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1, projection='3d')
+
+        fig.suptitle("Data run %d" % dataset)
+
         ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
         ax.set_xticklabels(['1', '2', '4', '8', '16', '32', '64', '128', '256'])
 
-        surf = ax.plot_surface(X, Y, mat)
+        surf = ax.plot_surface(X,
+                               Y,
+                               mat,
+                               cmap=cm.Blues,
+                               linewidth=0,
+                               rstride=1, cstride=1,
+                               )
 
         plt.savefig("images/foo_%03d.png" % dataset, bbox_inches='tight')
     except:
