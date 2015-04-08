@@ -24,7 +24,7 @@ sub safeDiv {
 	if(!$den) {
 		return "NAN";
 	}
-	
+
 	return $num/$den;
 }
 
@@ -80,8 +80,14 @@ for my $infile(<oz*>) {
 
 		if (exists($realTimes{$ns}{$iL}{-5}{$it})
 				and exists($realTimes{$ns}{$iL}{5}{$it})) {
-			printf "$ns, $iL, $it, %s\n", safeDiv($realTimes{$ns}{$iL}{5}{$it},
-												  $realTimes{$ns}{$iL}{-5}{$it});
+			my $ratio = safeDiv($realTimes{$ns}{$iL}{5}{$it},
+			                    $realTimes{$ns}{$iL}{-5}{$it});
+
+			printf "$ns, $iL, $it, %s\n", $ratio;
+
+			if ($ratio<-1 || $ratio>15) {
+			    print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n"
+			}
 	    }
 	}
 }
