@@ -59,7 +59,7 @@ for my $infile(<oz*>) {
 			}
 			elsif ($averageRealTime == -9999) {
 				$averageRealTime = average(\@baseRealTimes);
-				print "Average is $averageRealTime\n";
+				#print "Average is $averageRealTime\n";
 			}
 			$time -= $averageRealTime;
 
