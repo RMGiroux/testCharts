@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 import sys
-
+import os
 
 def linearInterp1DintoTarget(target, source, factor=5):
     """Interpolates the 'source' vector linearly into the 'target' vector, piece-wise,
@@ -79,6 +79,12 @@ class Vividict(dict):
 
 values = Vividict()
 
+try:
+    os.mkdir("images")
+except OSError:
+    # ignore it if the directory already exists
+    pass
+
 with open("processed_test_data.out") as f:
     for line in f:
         fields = line.split(",")
@@ -117,13 +123,22 @@ for dataset in values.keys():
     # print "mat = ",mat
 
     fig = plt.figure()
+    fig.suptitle("Problem Size = $2^{%d}$" % dataset)
+
     ax = fig.add_subplot(1, 1, 1, projection='3d')
 
-    fig.suptitle("Data run %d" % dataset)
-
+    ax.set_xlabel("Temporal Locality", fontsize=8)
     ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    ax.set_xticklabels(['1', '2', '4', '8', '16', '32', '64', '128', '256'])
+    ax.set_xticklabels(['$2^{%d}$' % i for i in range(0, 9)])
+
+    ax.set_ylabel("Subsystem Size", fontsize=8)
     ax.set_yticks(Y)
+    ax.set_yticklabels(['$2^{%d}$' % int(i) for i in Y])
+
+    ax.tick_params(axis='both', which='major', labelsize=7)
+    ax.tick_params(axis='both', which='minor', labelsize=7)
+
+    #ax.text(3, 8, 'boxed italics text in data coords $2^20$', style='italic', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})
 
     Xinterp, Yinterp = np.meshgrid(Xinterp, Yinterp)
 
@@ -136,5 +151,6 @@ for dataset in values.keys():
                            )
 
     #plt.show()
-    plt.savefig("images/foo_%03d.png" % dataset, bbox_inches='tight')
+    plt.savefig("images/foo_%03d.png" % dataset, bbox_inches='tight', pad_inches=0.25)
 
+    sys.exit(0)
