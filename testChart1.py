@@ -129,7 +129,7 @@ for dataset in values.keys():
 
     ax.set_xlabel("Temporal Locality", fontsize=8)
     ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    ax.set_xticklabels(['$2^{%d}$' % i for i in range(0, 9)])
+    ax.set_xticklabels(['$-2^{%d}$' % i for i in range(0, 9)])
 
     ax.set_ylabel("Subsystem Size", fontsize=8)
     ax.set_yticks(Y)
@@ -153,4 +153,4 @@ for dataset in values.keys():
     #plt.show()
     plt.savefig("images/foo_%03d.png" % dataset, bbox_inches='tight', pad_inches=0.25)
 
-    sys.exit(0)
+    # sys.exit(0)
