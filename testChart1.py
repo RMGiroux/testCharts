@@ -107,12 +107,11 @@ for dataset in values.keys():
 
     np.set_printoptions(threshold=np.nan)
 
-    print "Xinterp = ", Xinterp
-    print "Yinterp = ", Yinterp
-    print "mat = ", mat
-    print "newMapt = ", newMat
+    # print "Xinterp = ", Xinterp
+    # print "Yinterp = ", Yinterp
+    # print "mat = ", mat
+    # print "newMapt = ", newMat
 
-    sys.exit(0)
     # print "X = ",X
     # print "Y = ",Y
     # print "mat = ",mat
@@ -125,16 +124,6 @@ for dataset in values.keys():
     ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
     ax.set_xticklabels(['1', '2', '4', '8', '16', '32', '64', '128', '256'])
     ax.set_yticks(Y)
-
-    # X, Y = np.meshgrid(X, Y)
-    #
-    # surf = ax.plot_surface(X,
-    #                        Y,
-    #                        mat,
-    #                        cmap=cm.Blues,
-    #                        linewidth=0,
-    #                        rstride=1, cstride=1,
-    #                        )
 
     Xinterp, Yinterp = np.meshgrid(Xinterp, Yinterp)
 
