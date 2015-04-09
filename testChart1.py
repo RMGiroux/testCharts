@@ -42,6 +42,10 @@ def linearInterp1D(source, factor=5):
     :param factor: Expansion factor
     :return: np.ndarray
     """
+
+    if factor == 0:
+        return source
+
     target = np.zeros(1 + (len(source) - 1) * factor)
 
     return linearInterp1DintoTarget(target, source, factor)
@@ -55,6 +59,10 @@ def linearInterp2D(source, factor=5):
     :param factor: Expansion factor
     :return: np.ndarray
     """
+
+    if factor == 0:
+        return source
+
     sShape = source.shape
     rXShape = 1 + factor * (sShape[0] - 1)
     rYShape = 1 + factor * (sShape[1] - 1)
@@ -63,9 +71,9 @@ def linearInterp2D(source, factor=5):
     for i in range(0, sShape[0]):
         tXIdx = i * factor
 
-        linearInterp1DintoTarget(target[tXIdx], source[i])
+        linearInterp1DintoTarget(target[tXIdx], source[i], factor)
 
-    linearInterp1DintoTarget(target[-1], source[-1])
+    linearInterp1DintoTarget(target[-1], source[-1], factor)
 
     for i in range(0, sShape[0] - 1):
         tXIdx = i * factor
@@ -80,6 +88,62 @@ def linearInterp2D(source, factor=5):
                 target[tXIdx + x][y] = target[tXIdx][y] + x * deltas[y]
 
     return target
+
+def plot_graph(X, Y, Z, filename, factor=0, block=False):
+    """
+    Plot a 3D surface for X, Y, and Z, interpolating the data by 'factor' if specified.
+
+    If 'filename' is not None, then save the result into 'filename'.  Otherwise, display
+    the graphic interactively, blocking if 'block' is True.
+
+    :param X: the X axis points (1 dimensional np.ndarray)
+    :param Y: the Y axis points (1 dimensional np.ndarray)
+    :param Z: the Z axis points (2 dimensional np.ndarray)
+    :param filename: The filename to save into, or, if None, then indicates graph should be displayed
+    :param factor: Interpolation factor, in order to add polygons to graph and improve appearance without altering shape
+    :param block: Whether or not to block in interactive mode
+    :return: None
+    """
+
+    fig = plt.figure()
+    fig.suptitle("Problem Size = $2^{%d}$" % dataset)
+
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+
+    ax.set_xlabel("Temporal Locality", fontsize=8)
+    ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    ax.set_xticklabels(['$2^{-%d}$' % i for i in range(0, 9)])
+
+    ax.set_ylabel("Subsystem Size", fontsize=8)
+    ax.set_yticks(Y)
+    ax.set_yticklabels(['$2^{%d}$' % int(i) for i in Y])
+
+    ax.tick_params(axis='both', which='major', labelsize=7)
+    ax.tick_params(axis='both', which='minor', labelsize=7)
+
+    Xinterp = linearInterp1D(X, factor)
+    Yinterp = linearInterp1D(Y, factor)
+    Zinterp = linearInterp2D(Z, factor)
+
+    Xinterp, Yinterp = np.meshgrid(Xinterp, Yinterp)
+
+    surf = ax.plot_surface(Xinterp,
+                           Yinterp,
+                           Zinterp,
+                           cmap=cm.BuPu,
+                           linewidth=0,
+                           rstride=1, cstride=1,
+                           )
+
+    if filename is None:
+        plt.show(block)
+
+        # If block is true, then we we can close the figure(s) after the user is done interacting.
+        if block:
+            plt.close(fig)
+    else:
+        plt.savefig(filename, bbox_inches='tight', pad_inches=0.25)
+        plt.close(fig)
 
 
 # http://stackoverflow.com/questions/635483/what-is-the-best-way-to-implement-nested-dictionaries-in-python/19829714#19829714
@@ -109,11 +173,11 @@ with open("processed_test_data.out") as f:
 for dataset in values.keys():
     print "D: %s" % dataset
 
+    if dataset != 25:
+        continue
+
     X = range(0, 9)
     Y = values[dataset].keys()
-
-    Xinterp = linearInterp1D(X)
-    Yinterp = linearInterp1D(Y)
 
     mat = np.zeros([len(Y), len(X)])
 
@@ -124,48 +188,15 @@ for dataset in values.keys():
     except:
         print "***** Error (%s: %s) for dataset %s" % (sys.exc_info()[0], sys.exc_info()[1], dataset)
 
-    newMat = linearInterp2D(mat)
-
+    # Tell NumPy to print all of each array rather than eliding some...
     np.set_printoptions(threshold=np.nan)
 
-    # print "Xinterp = ", Xinterp
-    # print "Yinterp = ", Yinterp
-    # print "mat = ", mat
-    # print "newMapt = ", newMat
+    factorArg = 6
 
-    # print "X = ",X
-    # print "Y = ",Y
-    # print "mat = ",mat
-
-    fig = plt.figure()
-    fig.suptitle("Problem Size = $2^{%d}$" % dataset)
-
-    ax = fig.add_subplot(1, 1, 1, projection='3d')
-
-    ax.set_xlabel("Temporal Locality", fontsize=8)
-    ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    ax.set_xticklabels(['$2^{-%d}$' % i for i in range(0, 9)])
-
-    ax.set_ylabel("Subsystem Size", fontsize=8)
-    ax.set_yticks(Y)
-    ax.set_yticklabels(['$2^{%d}$' % int(i) for i in Y])
-
-    ax.tick_params(axis='both', which='major', labelsize=7)
-    ax.tick_params(axis='both', which='minor', labelsize=7)
-
-    #ax.text(3, 8, 'boxed italics text in data coords $2^20$', style='italic', bbox={'facecolor':'red', 'alpha':0.5, 'pad':10})
-
-    Xinterp, Yinterp = np.meshgrid(Xinterp, Yinterp)
-
-    surf = ax.plot_surface(Xinterp,
-                           Yinterp,
-                           newMat,
-                           cmap=cm.Blues,
-                           linewidth=0,
-                           rstride=1, cstride=1,
-                           )
-
-    #plt.show()
-    plt.savefig("images/foo_%03d.png" % dataset, bbox_inches='tight', pad_inches=0.25)
-
-    # sys.exit(0)
+    # Set to False for interactive examination of graphs
+    if True:
+        plot_graph(X, Y, mat, "images/foo_%02d_0.png" % dataset, factor=0)
+        plot_graph(X, Y, mat, "images/foo_%02d_%d.png" % (dataset, factorArg), factor=factorArg)
+    else:
+        plot_graph(X, Y, mat, None, factor=0, block=False)
+        plot_graph(X, Y, mat, None, factor=factorArg, block=True)
