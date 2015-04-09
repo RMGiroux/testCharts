@@ -10,7 +10,10 @@ def linearInterp1DintoTarget(target, source, factor=5):
     """Interpolates the 'source' vector linearly into the 'target' vector, piece-wise,
        inserting 'factor' interpolated elements between each of the 'source' elements.
 
-    :rtype : vector
+    :param target: "Expanded" vector into which interpolated values will be placed
+    :param source: Vector to expand
+    :param factor: Expansion factor
+    :return: np.ndarray
 
        Requires: 'len(target) == (len(source) + factor * (len(source) - 1))'
     """
@@ -32,16 +35,24 @@ def linearInterp1DintoTarget(target, source, factor=5):
 
 
 def linearInterp1D(source, factor=5):
+    """Returns a vector expanding on 'source' by inserting 'factor' linearly-interpolated values in between each
+    entry.
+
+    :param source: Vector to be expanded
+    :param factor: Expansion factor
+    :return: np.ndarray
+    """
     target = np.zeros(1 + (len(source) - 1) * factor)
 
     return linearInterp1DintoTarget(target, source, factor)
 
 
 def linearInterp2D(source, factor=5):
-    """
+    """Returns a matrix expanding on 'source' by inserting 'factor' linearly-interpolated values
+    in between each entry in both dimensions.
 
-    :param source:
-    :param factor:
+    :param source: Matrix to be expanded
+    :param factor: Expansion factor
     :return: np.ndarray
     """
     sShape = source.shape
