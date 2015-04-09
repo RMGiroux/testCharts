@@ -6,9 +6,37 @@ import sys
 import os
 import re
 
+# The full list of available colormaps (for testing, not needed at the moment).
+cmaps = ('Blues', 'BuGn', 'BuPu', 'GnBu', 'Greens', 'Greys', 'Oranges', 'OrRd',
+                             'PuBu', 'PuBuGn', 'PuRd', 'Purples', 'RdPu',
+                             'Reds', 'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd',
+         'afmhot', 'autumn', 'bone', 'cool', 'copper',
+                             'gist_heat', 'gray', 'hot', 'pink',
+                             'spring', 'summer', 'winter',
+         'BrBG', 'bwr', 'coolwarm', 'PiYG', 'PRGn', 'PuOr',
+                             'RdBu', 'RdGy', 'RdYlBu', 'RdYlGn', 'Spectral',
+                             'seismic',
+         'Accent', 'Dark2', 'Paired', 'Pastel1',
+                             'Pastel2', 'Set1', 'Set2', 'Set3',
+         'gist_earth', 'terrain', 'ocean', 'gist_stern',
+                             'brg', 'CMRmap', 'cubehelix',
+                             'gnuplot', 'gnuplot2', 'gist_ncar',
+                             'nipy_spectral', 'jet', 'rainbow',
+                             'gist_rainbow', 'hsv', 'flag', 'prism')
+
+
+
 def linearInterp1DintoTarget(target, source, factor=5):
     """Interpolates the 'source' vector linearly into the 'target' vector, piece-wise,
        inserting 'factor' interpolated elements between each of the 'source' elements.
+
+       Examples:
+          source:
+             [ 1., 2., 3. ]
+
+          factor 3:  [ 1., 1.33333333, 1.66666667, 2., 2.33333333, 2.66666667, 3. ]
+
+          factor 5:  [ 1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.4, 2.6, 2.8, 3. ]
 
     :param target: "Expanded" vector into which interpolated values will be placed
     :param source: Vector to expand
@@ -89,7 +117,7 @@ def linearInterp2D(source, factor=5):
 
     return target
 
-def plot_graph(X, Y, Z, filename, factor=0, block=False):
+def plot_graph(X, Y, Z, filename, factor=0, block=False, colormap = "jet"):
     """
     Plot a 3D surface for X, Y, and Z, interpolating the data by 'factor' if specified.
 
@@ -130,9 +158,10 @@ def plot_graph(X, Y, Z, filename, factor=0, block=False):
     surf = ax.plot_surface(Xinterp,
                            Yinterp,
                            Zinterp,
-                           cmap=cm.BuPu,
+                           cmap=plt.get_cmap(colormap),
                            linewidth=0,
                            rstride=1, cstride=1,
+                           alpha=1.0
                            )
 
     if filename is None:
@@ -171,10 +200,8 @@ with open("processed_test_data.out") as f:
                 = fields[3]
 
 for dataset in values.keys():
-    print "D: %s" % dataset
-
-    if dataset != 25:
-        continue
+    # if dataset != 25:
+    #     continue
 
     X = range(0, 9)
     Y = values[dataset].keys()
@@ -191,12 +218,12 @@ for dataset in values.keys():
     # Tell NumPy to print all of each array rather than eliding some...
     np.set_printoptions(threshold=np.nan)
 
-    factorArg = 6
-
     # Set to False for interactive examination of graphs
     if True:
-        plot_graph(X, Y, mat, "images/foo_%02d_0.png" % dataset, factor=0)
-        plot_graph(X, Y, mat, "images/foo_%02d_%d.png" % (dataset, factorArg), factor=factorArg)
+        for factorArg in (15, ):
+            for cmap in ('jet', ):
+                print "Plotting dataset %d at factor %d (colormap %s)" % (dataset, factorArg, cmap)
+                plot_graph(X, Y, mat, "images/foo_%02d_%d_%s.png" % (dataset, factorArg, cmap), factor=factorArg, colormap=cmap)
     else:
         plot_graph(X, Y, mat, None, factor=0, block=False)
         plot_graph(X, Y, mat, None, factor=factorArg, block=True)
