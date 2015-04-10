@@ -187,15 +187,20 @@ def output_plot_and_table(X, Y, Z,
         plt.close(fig)
 
     if titleFilename is not None:
-        hcell, wcell = 0.125, 2.
+        hcell, wcell = 0.125, 6.
         hpad, wpad = 0, 0
         nrows, ncols = len(yLabels) + 1, len(xLabels)
         fig=plt.figure(figsize=(ncols*wcell+wpad, nrows*hcell+hpad),dpi=600)
         ax=fig.add_subplot('111')
         ax.axis('off')
-        ax.table(cellText=Z,
-                 rowLabels=yLabels,
-                 colLabels=xLabels,
-                 loc='center')
+        table = ax.table(cellText=Z,
+                         rowLabels=yLabels,
+                         colLabels=xLabels,
+                         loc='center')
+
+        table_props = table.properties()
+        table_cells = table_props['child_artists']
+        for cell in table_cells: cell.set_height(0.1)
+
         plt.savefig(titleFilename, bbox_inches='tight')
         plt.close(fig)
