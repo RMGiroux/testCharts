@@ -117,7 +117,13 @@ def linearInterp2D(source, factor=5):
 
     return target
 
-def plot_graph(X, Y, Z, filename, factor=0, block=False, colormap = "jet"):
+def plot_graph(X, Y, Z,
+               title,
+               xTitle, xTicks, xLabels,
+               yTitle, yTicks, yLabels,
+               filename,
+               titleFilename,
+               factor=0, block=False, colormap = "jet"):
     """
     Plot a 3D surface for X, Y, and Z, interpolating the data by 'factor' if specified.
 
@@ -127,24 +133,32 @@ def plot_graph(X, Y, Z, filename, factor=0, block=False, colormap = "jet"):
     :param X: the X axis points (1 dimensional np.ndarray)
     :param Y: the Y axis points (1 dimensional np.ndarray)
     :param Z: the Z axis points (2 dimensional np.ndarray)
+    :param title: the graph title
+    :param xTitle: the X axis title
+    :param xTicks: the X axis numerical ticks
+    :param xLabels: the X axis labels
+    :param yTitle: the Y axis title
+    :param yTicks: the Y axis numerical ticks
+    :param yLabels: the Y axis labels
     :param filename: The filename to save into, or, if None, then indicates graph should be displayed
+    :param titleFilename: the filename to save the table graphic into
     :param factor: Interpolation factor, in order to add polygons to graph and improve appearance without altering shape
     :param block: Whether or not to block in interactive mode
     :return: None
     """
 
     fig = plt.figure()
-    fig.suptitle("Problem Size = $2^{%d}$" % dataset)
+    fig.suptitle(title)
 
     ax = fig.add_subplot(1, 1, 1, projection='3d')
 
-    ax.set_xlabel("Temporal Locality", fontsize=8)
-    ax.set_xticks([0, 1, 2, 3, 4, 5, 6, 7, 8])
-    ax.set_xticklabels(['$2^{-%d}$' % i for i in range(0, 9)])
+    ax.set_xlabel(xTitle, fontsize=8)
+    ax.set_xticks(xTicks)
+    ax.set_xticklabels(xLabels)
 
-    ax.set_ylabel("Subsystem Size", fontsize=8)
-    ax.set_yticks(Y)
-    ax.set_yticklabels(['$2^{%d}$' % int(i) for i in Y])
+    ax.set_ylabel(yTitle, fontsize=8)
+    ax.set_yticks(yTicks)
+    ax.set_yticklabels(yLabels)
 
     ax.tick_params(axis='both', which='major', labelsize=7)
     ax.tick_params(axis='both', which='minor', labelsize=7)
@@ -174,6 +188,20 @@ def plot_graph(X, Y, Z, filename, factor=0, block=False, colormap = "jet"):
         plt.savefig(filename, bbox_inches='tight', pad_inches=0.25)
         plt.close(fig)
 
+    if titleFilename is not None:
+        hcell, wcell = 0.125, 2.
+        hpad, wpad = 0, 0
+        nrows, ncols = len(yLabels) + 1, len(xLabels)
+        fig=plt.figure(figsize=(ncols*wcell+wpad, nrows*hcell+hpad),dpi=600)
+        ax=fig.add_subplot('111')
+        ax.axis('off')
+        ax.table(cellText=Z,
+                 rowLabels=yLabels,
+                 colLabels=xLabels,
+                 loc='center')
+        plt.savefig(titleFilename, bbox_inches='tight')
+        plt.close(fig)
+
 
 # http://stackoverflow.com/questions/635483/what-is-the-best-way-to-implement-nested-dictionaries-in-python/19829714#19829714
 class Vividict(dict):
@@ -181,6 +209,9 @@ class Vividict(dict):
         value = self[key] = type(self)()
         return value
 
+
+# Tell NumPy to print all of each array rather than eliding some...
+np.set_printoptions(threshold=np.nan)
 
 values = Vividict()
 
@@ -215,15 +246,17 @@ for dataset in values.keys():
     except:
         print "***** Error (%s: %s) for dataset %s" % (sys.exc_info()[0], sys.exc_info()[1], dataset)
 
-    # Tell NumPy to print all of each array rather than eliding some...
-    np.set_printoptions(threshold=np.nan)
 
-    # Set to False for interactive examination of graphs
-    if True:
-        for factorArg in (15, ):
-            for cmap in ('jet', ):
-                print "Plotting dataset %d at factor %d (colormap %s)" % (dataset, factorArg, cmap)
-                plot_graph(X, Y, mat, "images/foo_%02d_%d_%s.png" % (dataset, factorArg, cmap), factor=factorArg, colormap=cmap)
-    else:
-        plot_graph(X, Y, mat, None, factor=0, block=False)
-        plot_graph(X, Y, mat, None, factor=factorArg, block=True)
+    for factorArg in (15, ):
+        for cmap in ('jet', ):
+            print "Plotting dataset %d at factor %d (colormap %s)" % (dataset, factorArg, cmap)
+            plot_graph(X, Y, mat, "Problem Size = $2^{%d}$" % dataset,
+                       "Temporal Locality",
+                       [0, 1, 2, 3, 4, 5, 6, 7, 8],
+                       ['$2^{-%d}$' % i for i in range(0, 9)],
+                       "Subsystem Size",
+                       Y,
+                       ['$2^{%d}$' % int(i) for i in Y],
+                       "images/foo_%02d_%d_%s.png" % (dataset, factorArg, cmap),
+                       "images/foo_%02d_table.png" % dataset,
+                       factor=factorArg, colormap=cmap)
