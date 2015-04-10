@@ -114,12 +114,28 @@ def linearInterp2D(source, factor=5):
 
     return target
 
+def output_csv(X, xCSVLabels, Y, yCSVLabels, Z, tableCsvFilename):
+
+    def quote(s):
+        return "\"%s\"" % s
+
+    if tableCsvFilename is not None:
+        with open(tableCsvFilename, "w") as f:
+            f.write(",%s\n" % ",".join(map(quote, xCSVLabels)))
+            for rowIndex in range(0, len(Y)):
+                f.write("\"%s\"" % yCSVLabels[rowIndex])
+                for colIndex in range(0, len(X)):
+                    # f.write(",%f" % Z[len(Y) - rowIndex - 1][colIndex])
+                    f.write(",%f" % Z[rowIndex][colIndex])
+                f.write("\n")
+
 def output_plot_and_table(X, Y, Z,
                title,
-               xTitle, xTicks, xLabels,
-               yTitle, yTicks, yLabels,
+               xTitle, xTicks, xLabels, xCSVLabels,
+               yTitle, yTicks, yLabels, yCSVLabels,
                filename,
-               titleFilename,
+               tablePngFilename,
+               tableCsvFilename,
                factor=0, block=False, colormap = "jet"):
     """
     Plot a 3D surface for X, Y, and Z, interpolating the data by 'factor' if specified,
@@ -135,11 +151,14 @@ def output_plot_and_table(X, Y, Z,
     :param xTitle: the X axis title
     :param xTicks: the X axis numerical ticks
     :param xLabels: the X axis labels
+    :param xCSVLabels: the X axis labels (CSV format)
     :param yTitle: the Y axis title
     :param yTicks: the Y axis numerical ticks
     :param yLabels: the Y axis labels
+    :param yCSVLabels: the Y axis labels (CSV format)
     :param filename: The filename to save into, or, if None, then indicates graph should be displayed
-    :param titleFilename: the filename to save the table graphic into
+    :param tablePngFilename: the filename to save the table graphic into
+    :param tableCsvFilename: the filename to save the table csv into
     :param factor: Interpolation factor, in order to add polygons to graph and improve appearance without altering shape
     :param block: Whether or not to block in interactive mode
     :return: None
@@ -186,21 +205,35 @@ def output_plot_and_table(X, Y, Z,
         plt.savefig(filename, bbox_inches='tight', pad_inches=0.25)
         plt.close(fig)
 
-    if titleFilename is not None:
-        hcell, wcell = 0.125, 6.
-        hpad, wpad = 0, 0
-        nrows, ncols = len(yLabels) + 1, len(xLabels)
-        fig=plt.figure(figsize=(ncols*wcell+wpad, nrows*hcell+hpad),dpi=600)
-        ax=fig.add_subplot('111')
-        ax.axis('off')
-        table = ax.table(cellText=Z,
-                         rowLabels=yLabels,
-                         colLabels=xLabels,
-                         loc='center')
+    # if tablePngFilename is not None:
+    #     hcell, wcell = 0.125, 4.
+    #     hpad, wpad = 0, 0
+    #     nrows, ncols = len(yLabels) + 1, len(xLabels)
+    #     fig=plt.figure(figsize=(ncols*wcell+wpad, nrows*hcell+hpad),dpi=600)
+    #     ax=fig.add_subplot('111')
+    #     ax.axis('off')
+    #
+    #     if len(xLabels) > len(yLabels):
+    #         table = ax.table(cellText=Z.transpose(),
+    #                          rowLabels=xLabels,
+    #                          colLabels=yLabels,
+    #                          loc='center')
+    #     else:
+    #         table = ax.table(cellText=Z,
+    #                          rowLabels=yLabels,
+    #                          colLabels=xLabels,
+    #                          loc='center')
+    #
+    #     table_props = table.properties()
+    #     table_cells = table_props['child_artists']
+    #     for cell in table_cells:
+    #         cell.set_height(0.25)
+    #
+    #     plt.savefig(tablePngFilename, bbox_inches='tight')
+    #     plt.close(fig)
 
-        table_props = table.properties()
-        table_cells = table_props['child_artists']
-        for cell in table_cells: cell.set_height(0.1)
 
-        plt.savefig(titleFilename, bbox_inches='tight')
-        plt.close(fig)
+    if len(X) <= len(Y):
+        output_csv(X, xCSVLabels, Y, yCSVLabels, Z, tableCsvFilename)
+    else:
+        output_csv(Y, yCSVLabels, X, xCSVLabels, Z.transpose(), tableCsvFilename)
