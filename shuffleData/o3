@@ -1,0 +1,128 @@
+
+nS = 1	iL = 10000000	aC = 100000000	cC = 30000000	it = 1
+
+minLen = 10000000, maxLen = 10000000, diff = 0
+
+real	0m14.388s
+user	0m14.227s
+sys	0m0.046s
+
+nS = 1	iL = 10000000	aC = 100000000	cC = -30000000	it = 1
+
+minLen = 10000000, maxLen = 10000000, diff = 0
+
+real	0m14.428s
+user	0m14.336s
+sys	0m0.016s
+
+nS = 10	iL = 1000000	aC = 10000000	cC = 30000000	it = 1
+
+minLen = 996672, maxLen = 1003674, diff = 7002
+
+real	0m21.175s
+user	0m21.060s
+sys	0m0.015s
+
+nS = 10	iL = 1000000	aC = 10000000	cC = -30000000	it = 1
+
+minLen = 996672, maxLen = 1003674, diff = 7002
+
+real	0m15.290s
+user	0m15.178s
+sys	0m0.046s
+
+nS = 100	iL = 100000	aC = 1000000	cC = 30000000	it = 1
+
+minLen = 98623, maxLen = 101307, diff = 2684
+
+real	0m18.941s
+user	0m18.813s
+sys	0m0.046s
+
+nS = 100	iL = 100000	aC = 1000000	cC = -30000000	it = 1
+
+minLen = 98623, maxLen = 101307, diff = 2684
+
+real	0m15.532s
+user	0m15.412s
+sys	0m0.031s
+
+nS = 1000	iL = 10000	aC = 100000	cC = 30000000	it = 1
+
+minLen = 9463, maxLen = 10583, diff = 1120
+
+real	0m17.870s
+user	0m17.767s
+sys	0m0.015s
+
+nS = 1000	iL = 10000	aC = 100000	cC = -30000000	it = 1
+
+minLen = 9463, maxLen = 10583, diff = 1120
+
+real	0m16.363s
+user	0m16.224s
+sys	0m0.077s
+
+nS = 10000	iL = 1000	aC = 10000	cC = 30000000	it = 1
+
+minLen = 796, maxLen = 1200, diff = 404
+
+real	0m18.133s
+user	0m18.033s
+sys	0m0.015s
+
+nS = 10000	iL = 1000	aC = 10000	cC = -30000000	it = 1
+
+minLen = 796, maxLen = 1200, diff = 404
+
+real	0m17.286s
+user	0m17.082s
+sys	0m0.077s
+
+nS = 100000	iL = 100	aC = 1000	cC = 30000000	it = 1
+
+minLen = 24, maxLen = 169, diff = 145
+
+real	0m22.483s
+user	0m22.370s
+sys	0m0.061s
+
+nS = 100000	iL = 100	aC = 1000	cC = -30000000	it = 1
+
+minLen = 24, maxLen = 169, diff = 145
+
+real	0m21.672s
+user	0m21.605s
+sys	0m0.000s
+
+nS = 1000000	iL = 10	aC = 100	cC = 30000000	it = 1
+
+minLen = 0, maxLen = 32, diff = 32
+
+real	0m25.522s
+user	0m25.350s
+sys	0m0.030s
+
+nS = 1000000	iL = 10	aC = 100	cC = -30000000	it = 1
+
+minLen = 0, maxLen = 32, diff = 32
+
+real	0m24.654s
+user	0m24.553s
+sys	0m0.031s
+
+nS = 10000000	iL = 1	aC = 10	cC = 30000000	it = 1
+
+minLen = 0, maxLen = 4, diff = 4
+
+real	0m29.186s
+user	0m29.016s
+sys	0m0.093s
+
+nS = 10000000	iL = 1	aC = 10	cC = -30000000	it = 1
+
+minLen = 0, maxLen = 4, diff = 4
+
+real	0m29.027s
+user	0m28.891s
+sys	0m0.061s

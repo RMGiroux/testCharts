@@ -1,0 +1,128 @@
+
+nS = 1	iL = 10000000	aC = 100000000	cC = 100000000	it = 1
+
+minLen = 10000000, maxLen = 10000000, diff = 0
+
+real	0m39.800s
+user	0m39.654s
+sys	0m0.046s
+
+nS = 1	iL = 10000000	aC = 100000000	cC = -100000000	it = 1
+
+minLen = 10000000, maxLen = 10000000, diff = 0
+
+real	0m39.875s
+user	0m39.764s
+sys	0m0.015s
+
+nS = 10	iL = 1000000	aC = 10000000	cC = 100000000	it = 1
+
+minLen = 995411, maxLen = 1008057, diff = 12646
+
+real	0m47.962s
+user	0m47.860s
+sys	0m0.030s
+
+nS = 10	iL = 1000000	aC = 10000000	cC = -100000000	it = 1
+
+minLen = 995411, maxLen = 1008057, diff = 12646
+
+real	0m41.947s
+user	0m41.823s
+sys	0m0.047s
+
+nS = 100	iL = 100000	aC = 1000000	cC = 100000000	it = 1
+
+minLen = 97582, maxLen = 102351, diff = 4769
+
+real	0m46.209s
+user	0m46.128s
+sys	0m0.015s
+
+nS = 100	iL = 100000	aC = 1000000	cC = -100000000	it = 1
+
+minLen = 97582, maxLen = 102351, diff = 4769
+
+real	0m42.969s
+user	0m42.899s
+sys	0m0.031s
+
+nS = 1000	iL = 10000	aC = 100000	cC = 100000000	it = 1
+
+minLen = 8973, maxLen = 10878, diff = 1905
+
+real	0m47.616s
+user	0m47.424s
+sys	0m0.092s
+
+nS = 1000	iL = 10000	aC = 100000	cC = -100000000	it = 1
+
+minLen = 8973, maxLen = 10878, diff = 1905
+
+real	0m46.020s
+user	0m45.911s
+sys	0m0.030s
+
+nS = 10000	iL = 1000	aC = 10000	cC = 100000000	it = 1
+
+minLen = 626, maxLen = 1327, diff = 701
+
+real	0m49.518s
+user	0m49.374s
+sys	0m0.046s
+
+nS = 10000	iL = 1000	aC = 10000	cC = -100000000	it = 1
+
+minLen = 626, maxLen = 1327, diff = 701
+
+real	0m48.900s
+user	0m48.797s
+sys	0m0.031s
+
+nS = 100000	iL = 100	aC = 1000	cC = 100000000	it = 1
+
+minLen = 0, maxLen = 235, diff = 235
+
+real	1m5.225s
+user	1m5.114s
+sys	0m0.030s
+
+nS = 100000	iL = 100	aC = 1000	cC = -100000000	it = 1
+
+minLen = 0, maxLen = 235, diff = 235
+
+real	1m4.350s
+user	1m4.147s
+sys	0m0.046s
+
+nS = 1000000	iL = 10	aC = 100	cC = 100000000	it = 1
+
+minLen = 0, maxLen = 55, diff = 55
+
+real	1m13.829s
+user	1m13.726s
+sys	0m0.000s
+
+nS = 1000000	iL = 10	aC = 100	cC = -100000000	it = 1
+
+minLen = 0, maxLen = 55, diff = 55
+
+real	1m12.847s
+user	1m12.743s
+sys	0m0.030s
+
+nS = 10000000	iL = 1	aC = 10	cC = 100000000	it = 1
+
+minLen = 0, maxLen = 11, diff = 11
+
+real	1m24.828s
+user	1m24.521s
+sys	0m0.092s
+
+nS = 10000000	iL = 1	aC = 10	cC = -100000000	it = 1
+
+minLen = 0, maxLen = 11, diff = 11
+
+real	1m23.606s
+user	1m23.507s
+sys	0m0.046s
