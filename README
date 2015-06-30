@@ -1,3 +1,6 @@
 numPy charting example, based on
   http://stackoverflow.com/questions/8841827/3d-plotting-with-python
 
+New benchmark programs and data in https://github.com/bloomberg/bde-allocator-benchmarks
+    - using benchmarks/allocators/results/intel-gcc-20150630/schedule
+      data initially
