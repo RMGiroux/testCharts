@@ -28,14 +28,16 @@ sub safeDiv {
 	return $num/$den;
 }
 
+if (@ARGV) {
+	chdir $ARGV[0] or die "Unable to cd to $ARGV[0], error $!";
+}
+
 for my $infile(<oz*>) {
 	# Everything below 15 is noise - JSL
 	next unless $infile ge "oz15";
 
 	print STDERR "Processing $infile\n";
 	local $/;
-
-	$/ = "\nsys\t";
 
 	my %realTimes;  # Keys: {ns}{iL}{cc}{it}
 	my @baseRealTimes;
@@ -47,46 +49,56 @@ for my $infile(<oz*>) {
 	my $prevKey = "";
 
 	open(my $in, "<", $infile) or die "Can't open $infile, error $!";
-	RECORD: while(<$in>) {
-		if (m{^nS = -(\d+)\s+iL = (\d+).*?cC = (-?\d+)\s+it = (\d+).*real\s+(\d+)m(\d+\.\d+)}ms) {
-			my ($ns, $iL, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4, $5, $6);
+	local $/;
+	local $_ = <$in>;
+	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)}msg) {
+		my ($ns, $iL, $aC, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4, $5, $6, $7);
 
-			my $time = $minutes*60+$seconds;
+		my $time = $minutes*60+$seconds;
 
-			if ($it == 0) {
-				push @baseRealTimes, $time;
-				next RECORD;
-			}
-			elsif ($averageRealTime == -9999) {
-				$averageRealTime = average(\@baseRealTimes);
-				#print "Average is $averageRealTime\n";
-			}
-			$time -= $averageRealTime;
+		my $key = "$ns/$iL/$it/$aC";
 
-			my $key = "$ns/$iL/$it";
+		push @keys, [$ns, $iL, $it, $aC] if !$seenKeys{$key}++;
 
-			push @keys, [$ns, $iL, $it] if !$seenKeys{$key}++;
+		die "Reused key!" if exists $realTimes{$ns}{$iL}{$cc}{$it}{$aC};
+		$realTimes{$ns}{$iL}{$cc}{$it}{$aC} = $time;
+		die "Missing key!" unless exists $realTimes{$ns}{$iL}{$cc}{$it}{$aC};
 
-			die "Reused key!" if exists $realTimes{$ns}{$iL}{$cc}{$it};
-			$realTimes{$ns}{$iL}{$cc}{$it} = $time;
-			die "Missing key!" unless exists $realTimes{$ns}{$iL}{$cc}{$it};
-
-			#printf "==== $ns, $iL, $it, $cc, %f\n", $time;
-		}
+		#printf "==== $ns, $iL, $aC, $it, $cc, %f\n", $time;
 	}
 
 	foreach my $key(@keys) {
-		my ($ns, $iL, $it) = @$key;
+		my ($ns, $iL, $it, $aC) = @$key;
 
-		if (exists($realTimes{$ns}{$iL}{-5}{$it})
-				and exists($realTimes{$ns}{$iL}{5}{$it})) {
-			my $ratio = safeDiv($realTimes{$ns}{$iL}{5}{$it},
-			                    $realTimes{$ns}{$iL}{-5}{$it});
+		next unless $aC;
+
+		if (exists($realTimes{$ns}{$iL}{-5}{$it}{$aC})
+				and exists($realTimes{$ns}{$iL}{5}{$it}{$aC})
+				and exists($realTimes{$ns}{$iL}{-5}{$it}{0})
+				and exists($realTimes{$ns}{$iL}{5}{$it}{0})) {
+			my $averageBaseTime = ($realTimes{$ns}{$iL}{-5}{$it}{0}
+			                     + $realTimes{$ns}{$iL}{5}{$it}{0})
+			                     / 2;
+			my $baseTimeDelta = abs($realTimes{$ns}{$iL}{-5}{$it}{0}
+			                     - $realTimes{$ns}{$iL}{5}{$it}{0})
+			                     / $realTimes{$ns}{$iL}{-5}{$it}{0};
+			printf STDERR "Base times for $ns/$iL/$it ($realTimes{$ns}{$iL}{-5}{$it}{0}, "
+			           . "$realTimes{$ns}{$iL}{5}{$it}{0}) differ by more than 2%% (%f %%)\n",
+			           $baseTimeDelta if $baseTimeDelta>2;
+
+			my $ratio = safeDiv($realTimes{$ns}{$iL}{5}{$it}{$aC} - $averageBaseTime,
+			                    $realTimes{$ns}{$iL}{-5}{$it}{$aC} - $averageBaseTime);
 
 			printf "$ns, $iL, $it, %s\n", $ratio;
 
 			if ($ratio<-1 || $ratio>15) {
-			    print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n"
+			    print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n";
+			    printf STDERR "\taverageBaseTime               = %f\n",
+			    			  $averageBaseTime;
+			    printf STDERR "\tnumerator (pre-subtraction)   = %f\n",
+			     			  $realTimes{$ns}{$iL}{5}{$it}{$aC};
+			    printf STDERR "\tdenominator (pre-subtraction) = %f\n",
+			     			  $realTimes{$ns}{$iL}{-5}{$it}{$aC};
 			}
 	    }
 	}
