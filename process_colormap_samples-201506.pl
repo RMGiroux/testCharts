@@ -45,20 +45,24 @@ for my $infile(<oz*>) {
 
 	my %seenKeys;
 	my @keys;
+	my %lines;
 
 	my $prevKey = "";
 
 	open(my $in, "<", $infile) or die "Can't open $infile, error $!";
 	local $/;
 	local $_ = <$in>;
-	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)}msg) {
+	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+).*?$}msg) {
 		my ($ns, $iL, $aC, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4, $5, $6, $7);
 
 		my $time = $minutes*60+$seconds;
 
+		my $lineKey = "$ns/$iL/$it";
 		my $key = "$ns/$iL/$it/$aC";
 
-		push @keys, [$ns, $iL, $it, $aC] if !$seenKeys{$key}++;
+		push @keys, [$ns, $iL, $it, $aC, $lineKey] if !$seenKeys{$key}++;
+
+		push @{$lines{$lineKey}}, $&."\n\n";
 
 		die "Reused key!" if exists $realTimes{$ns}{$iL}{$cc}{$it}{$aC};
 		$realTimes{$ns}{$iL}{$cc}{$it}{$aC} = $time;
@@ -68,7 +72,7 @@ for my $infile(<oz*>) {
 	}
 
 	foreach my $key(@keys) {
-		my ($ns, $iL, $it, $aC) = @$key;
+		my ($ns, $iL, $it, $aC, $keyStr) = @$key;
 
 		next unless $aC;
 
@@ -99,6 +103,7 @@ for my $infile(<oz*>) {
 			     			  $realTimes{$ns}{$iL}{5}{$it}{$aC};
 			    printf STDERR "\tdenominator (pre-subtraction) = %f\n",
 			     			  $realTimes{$ns}{$iL}{-5}{$it}{$aC};
+			    print STDERR @{$lines{$keyStr}},"\n";
 			}
 	    }
 	}
