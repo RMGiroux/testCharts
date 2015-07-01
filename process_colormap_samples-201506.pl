@@ -28,9 +28,22 @@ sub safeDiv {
 	return $num/$den;
 }
 
+sub min {
+	return $_[0] if $_[0]<$_[1];
+	return $_[1];
+}
+
+sub max {
+	return $_[0] if $_[0]>$_[1];
+	return $_[1];
+}
+
 if (@ARGV) {
 	chdir $ARGV[0] or die "Unable to cd to $ARGV[0], error $!";
 }
+
+my $maxDelta = 0;
+my @maxDeltaByLog;
 
 for my $infile(<oz*>) {
 	# Everything below 15 is noise - JSL
@@ -86,17 +99,36 @@ for my $infile(<oz*>) {
 			my $baseTimeDelta = abs($realTimes{$ns}{$iL}{-5}{$it}{0}
 			                     - $realTimes{$ns}{$iL}{5}{$it}{0})
 			                     / $realTimes{$ns}{$iL}{-5}{$it}{0};
-			printf STDERR "Base times for $ns/$iL/$it ($realTimes{$ns}{$iL}{-5}{$it}{0}, "
-			           . "$realTimes{$ns}{$iL}{5}{$it}{0}) differ by more than 2%% (%f %%)\n",
-			           $baseTimeDelta if $baseTimeDelta>2;
 
+			my $complaints = 0;
+
+			if ($baseTimeDelta>0.02) {
+				printf STDERR "++++++++++ Base times for $ns/$iL/$it ($realTimes{$ns}{$iL}{-5}{$it}{0}, "
+						   . "$realTimes{$ns}{$iL}{5}{$it}{0}) differ by more than 2%% (%f %%)\n",
+						   $baseTimeDelta * 100 ;
+				++$complaints;
+			}
+
+			my $logOfTime = max(int(log($realTimes{$ns}{$iL}{-5}{$it}{0})/log(10)),0);
+
+			if ($baseTimeDelta > $maxDeltaByLog[$logOfTime]) {
+				$maxDeltaByLog[$logOfTime]=$baseTimeDelta;
+				printf STDERR ">>>>>>>>>> New max delta for log range $logOfTime: %f %%\n",
+						      $baseTimeDelta*100;
+
+				++$complaints;
+			}
 			my $ratio = safeDiv($realTimes{$ns}{$iL}{5}{$it}{$aC} - $averageBaseTime,
 			                    $realTimes{$ns}{$iL}{-5}{$it}{$aC} - $averageBaseTime);
 
 			printf "$ns, $iL, $it, %s\n", $ratio;
 
-			if ($ratio<-1 || $ratio>15) {
-			    print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n";
+			if ($ratio<0 || $ratio>15) {
+			    print STDERR "********** Ratio $ratio for $ns, $iL, $it is strange!\n";
+			    ++$complaints;
+			}
+
+			if ($complaints) {
 			    printf STDERR "\taverageBaseTime               = %f\n",
 			    			  $averageBaseTime;
 			    printf STDERR "\tnumerator (pre-subtraction)   = %f\n",
@@ -104,6 +136,7 @@ for my $infile(<oz*>) {
 			    printf STDERR "\tdenominator (pre-subtraction) = %f\n",
 			     			  $realTimes{$ns}{$iL}{-5}{$it}{$aC};
 			    print STDERR @{$lines{$keyStr}},"\n";
+			    print STDERR "-"x50,"\n\n";
 			}
 	    }
 	}
