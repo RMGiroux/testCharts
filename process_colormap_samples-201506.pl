@@ -65,7 +65,7 @@ for my $infile(<oz*>) {
 	open(my $in, "<", $infile) or die "Can't open $infile, error $!";
 	local $/;
 	local $_ = <$in>;
-	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+).*?$}msg) {
+	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)elapsed.*?$}msg) {
 		my ($ns, $iL, $aC, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4, $5, $6, $7);
 
 		my $time = $minutes*60+$seconds;

@@ -28,13 +28,13 @@ sub safeDiv {
 	return $num/$den;
 }
 
-for my $infile(<shuffleData/o*>) {
+for my $infile(<o*>) {
     next if $infile =~ /o9$|o10$/;
 
 	print STDERR "Processing $infile\n";
 
 	local $/;
-	$/ = "\nsys\t";
+	$/ = "swaps\n";
 
 	my %realTimes;  # Keys: {ns}{iL}{cc}{it}
 	my @baseRealTimes;
@@ -50,8 +50,11 @@ for my $infile(<shuffleData/o*>) {
 
 	open(my $in, "<", $infile) or die "Can't open $infile, error $!";
 	RECORD: while(<$in>) {
-		if (m{^nS = (\d+)\s+iL = (\d+).*?cC = (-?\d+)\s+it = (\d+).*real\s+(\d+)m(\d+\.\d+)}ms) {
-			my ($ns, $iL, $cc, $it, $minutes, $seconds) = ($1, $2, $3/10000000, $4, $5, $6);
+    	#while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+).*?$}msg) {
+		if (m{^nS = (\d+)\s+iL = (\d+).*?aC = (\d+)\s+cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)elapsed.*?$}ms) {
+			my ($ns, $iL, $ac, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4/10000000, $5, $6, $7);
+
+			next RECORD if $ac == 0;
 
 			my $time = $minutes*60+$seconds;
 
