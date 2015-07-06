@@ -122,7 +122,9 @@ def output_csv(X, xCSVLabels, Y, yCSVLabels, Z, tableCsvFilename):
     if tableCsvFilename is not None:
         with open(tableCsvFilename, "w") as f:
             f.write(",%s\n" % ",".join(map(quote, xCSVLabels)))
-            for rowIndex in range(0, len(Y)):
+            rowRange = range(0, len(Y))
+            rowRange.reverse()
+            for rowIndex in rowRange:
                 f.write("\"%s\"" % yCSVLabels[rowIndex])
                 for colIndex in range(0, len(X)):
                     # f.write(",%f" % Z[len(Y) - rowIndex - 1][colIndex])
