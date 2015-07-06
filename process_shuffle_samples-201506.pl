@@ -50,7 +50,7 @@ for my $infile(<o*>) {
 
 	open(my $in, "<", $infile) or die "Can't open $infile, error $!";
 	RECORD: while(<$in>) {
-    	#while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+).*?$}msg) {
+    	#while (m{^nS = -(\d+)\s+iL = (\d+)\s +aC = (\d+).*?aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+).*?$}msg) {
 		if (m{^nS = (\d+)\s+iL = (\d+).*?aC = (\d+)\s+cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)elapsed.*?$}ms) {
 			my ($ns, $iL, $ac, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4/10000000, $5, $6, $7);
 
@@ -78,6 +78,7 @@ for my $infile(<o*>) {
 
         next if $cc < 0;
 
+		# New Ratio will be (+$cc time - 0 shuffle avg time)/(-$cc time - 0 shuffle avg time)
 		my $ratio = ($realTimes{$ns}{$iL}{$cc}{$it} - $realTimes{$ns}{$iL}{-$cc}{$it})/$costOf0Shuffles;
 
         printf STDERR "$ns, $cc, %s, %s, %s\n",$realTimes{$ns}{$iL}{$cc}{$it},$realTimes{$ns}{$iL}{-$cc}{$it}, $ratio;

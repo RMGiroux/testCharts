@@ -43,7 +43,12 @@ if (@ARGV) {
 }
 
 my $maxDelta = 0;
-my @maxDeltaByLog;
+my @maxDeltaByLog=(-9999)x50;
+
+my %timeFormatREs = (
+	"real"     => qr/real\s+(\d+)m(.*?)s/
+  , "elapsed"  => qr/(\d+):(\d+\.\d+)elapsed/
+);
 
 for my $infile(<oz*>) {
 	# Everything below 15 is noise - JSL
@@ -65,7 +70,14 @@ for my $infile(<oz*>) {
 	open(my $in, "<", $infile) or die "Can't open $infile, error $!";
 	local $/;
 	local $_ = <$in>;
-	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)elapsed.*?$}msg) {
+
+	my $timeRE = $timeFormatREs{real};
+
+	if(/elapsed/) {
+		$timeRE = $timeFormatREs{elapsed};
+	}
+
+	while (m{^nS = -(\d+)\s+iL = (\d+)\s+aC = (\d+).*?cC = (-?\d+)\s+it = (\d+).*?$timeRE.*?$}msg) {
 		my ($ns, $iL, $aC, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4, $5, $6, $7);
 
 		my $time = $minutes*60+$seconds;
