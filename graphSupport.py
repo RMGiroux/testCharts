@@ -218,7 +218,9 @@ def output_plot_and_table(X, Y, Z,
 
     offsets = [-100, -40, 40]
     offsets = [0, 0, 0]
+
     cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='z', offset=offsets[0], cmap=cmap)
+
     #cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='x', offset=offsets[1], cmap=cmap)
     #cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='y', offset=10, cmap=cmap)
 

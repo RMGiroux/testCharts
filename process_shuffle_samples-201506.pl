@@ -57,54 +57,60 @@ for my $infile(<o*>) {
 		if (m{^nS = (\d+)\s+iL = (\d+).*?aC = (\d+)\s+cC = (-?\d+)\s+it = (\d+).*?(\d+):(\d+\.\d+)elapsed.*?$}ms) {
 			my ($ns, $iL, $ac, $cc, $it, $minutes, $seconds) = ($1, $2, $3, $4/10000000, $5, $6, $7);
 
-			next RECORD if $ac == 0;
+			#next RECORD if $ac == 0;
 
 			my $time = $minutes*60+$seconds;
-
-			#$time -= $timeDelta * abs($cc);
 
 			my $key = "$ns/$iL/$it/$cc";
             #print STDERR "===  $key, $time\n";
 
-			push @keys, [$ns, $iL, $it, $cc] if !$seenKeys{$key}++;
+			push @keys, [$ns, $iL, $it, $cc, $ac] if $ac && !$seenKeys{$key}++;
 
-			if (exists $realTimes{$ns}{$iL}{$cc}{$it}) {
-				warn "Reused key ($ns/$iL/$cc/$it)!" if $cc;
+			if (exists $realTimes{$ns}{$iL}{$cc}{$it}{$ac}) {
+				warn "Reused key ($ns/$iL/$cc/$it/$ac)!" if $cc;
 				next RECORD;
 			}
 
-			print STDERR "Setting realTimes{$ns}{$iL}{$cc}{$it} = $time;\n" if $debug>2;
-			$realTimes{$ns}{$iL}{$cc}{$it} = $time;
-			die "Missing key!" unless exists $realTimes{$ns}{$iL}{$cc}{$it};
+			print STDERR "Setting realTimes{$ns}{$iL}{$cc}{$it}{$ac} = $time;\n" if $debug>2;
+			$realTimes{$ns}{$iL}{$cc}{$it}{$ac} = $time;
+			die "Missing key!" unless exists $realTimes{$ns}{$iL}{$cc}{$it}{$ac};
 
-			printf STDERR "==== ns: $ns, iL: $iL, it: $it, cc: $cc, time: %f\n", $time if $debug>2;
+			printf STDERR "==== ns: $ns, iL: $iL, it: $it, cc: $cc, ac: $ac, time: %f\n", $time if $debug;
 		}
 	}
 
+	KEY:
 	foreach my $key(@keys) {
-		my ($ns, $iL, $it, $cc) = @$key;
+		my ($ns, $iL, $it, $cc, $ac) = @$key;
+		my $ratio = 1;
 
-        next if $cc <= 0;
+		next if $cc < 0;
 
-		print STDERR "Keys of realTimes{$ns}{$iL} = \n\t",(join "\n\t", sort keys %{$realTimes{$ns}{$iL}}),"\n" if $debug>2;
-		#my $ratio = ($realTimes{$ns}{$iL}{$cc}{$it}
-		#             - $realTimes{$ns}{$iL}{-$cc}{$it})
-		#           / $costOf0Shuffles;
+		if ($cc > 0) {
+			print STDERR "Keys of realTimes{$ns}{$iL} = \n\t",(join "\n\t", sort keys %{$realTimes{$ns}{$iL}}),"\n" if $debug>2;
+			#my $ratio = ($realTimes{$ns}{$iL}{$cc}{$it}
+			#             - $realTimes{$ns}{$iL}{-$cc}{$it})
+			#           / $costOf0Shuffles;
 
-		# New Ratio will be (+$cc time - 0 shuffle avg time)/(-$cc time - 0 shuffle avg time)
-		my $ratio = ($realTimes{$ns}{$iL}{$cc}{$it} - $realTimes{$ns}{$iL}{0}{$it})
-		          / ($realTimes{$ns}{$iL}{-$cc}{$it} - $realTimes{$ns}{$iL}{0}{$it});
+			# New Ratio will be (+$cc time - 0 shuffle avg time)/(-$cc time - 0 shuffle avg time)
+			$ratio = safeDiv(($realTimes{$ns}{$iL}{$cc}{$it}{$ac} - $realTimes{$ns}{$iL}{$cc}{$it}{0}),
+			               , ($realTimes{$ns}{$iL}{-$cc}{$it}{$ac} - $realTimes{$ns}{$iL}{-$cc}{$it}{0}));
 
-        printf STDERR "ns: $ns, iL: $iL, cc: $cc, it: $it, +time: %s, -time: %s, 0time: %s, ratio: %s\n",
-        									$realTimes{$ns}{$iL}{$cc}{$it},
-        									$realTimes{$ns}{$iL}{-$cc}{$it},
-        									$realTimes{$ns}{$iL}{0}{$it},
-        									$ratio if $debug;
+			printf STDERR "ns: $ns, iL: $iL, cc: $cc, it: $it, +time: %s, -time: %s, +0time: %s, -0time: %s, ratio: %s\n",
+												$realTimes{$ns}{$iL}{$cc}{$it}{$ac},
+												$realTimes{$ns}{$iL}{-$cc}{$it}{$ac},
+												$realTimes{$ns}{$iL}{$cc}{$it}{0},
+												$realTimes{$ns}{$iL}{-$cc}{$it}{0},
+												$ratio if $debug;
+		}
+
+        if ($ratio eq "NAN" || $ratio<1 || $ratio>25) {
+            print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n"
+	    }
+
+		$ratio = 0 if $ratio eq "NAN" || $ratio < 1;
 
         printf "$ns, $cc, %s\n", $ratio;
 
-        if ($ratio<-1 || $ratio>25) {
-            print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n"
-	    }
 	}
 }
