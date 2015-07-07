@@ -119,17 +119,34 @@ def output_csv(X, xCSVLabels, Y, yCSVLabels, Z, tableCsvFilename):
     def quote(s):
         return "\"%s\"" % s
 
-    if tableCsvFilename is not None:
-        with open(tableCsvFilename, "w") as f:
-            f.write(",%s\n" % ",".join(map(quote, xCSVLabels)))
-            rowRange = range(0, len(Y))
-            rowRange.reverse()
-            for rowIndex in rowRange:
-                f.write("\"%s\"" % yCSVLabels[rowIndex])
-                for colIndex in range(0, len(X)):
-                    # f.write(",%f" % Z[len(Y) - rowIndex - 1][colIndex])
-                    f.write(",%f" % Z[rowIndex][colIndex])
-                f.write("\n")
+    if False: # not transposed
+        if tableCsvFilename is not None:
+            with open(tableCsvFilename, "w") as f:
+                f.write(",%s\n" % ",".join(map(quote, xCSVLabels)))
+                rowRange = range(0, len(Y))
+                #rowRange.reverse()
+                for rowIndex in rowRange:
+                    f.write("\"%s\"" % yCSVLabels[rowIndex])
+                    colRange = range(0, len(X))
+                    colRange.reverse()
+                    for colIndex in colRange:
+                        # f.write(",%f" % Z[len(Y) - rowIndex - 1][colIndex])
+                        f.write(",%f" % Z[rowIndex][colIndex])
+                    f.write("\n")
+    else: # transposed case
+        if tableCsvFilename is not None:
+            with open(tableCsvFilename, "w") as f:
+                f.write(",%s\n" % ",".join(map(quote, yCSVLabels)))
+                rowRange = range(0, len(X))
+                rowRange.reverse()
+                colRange = range(0, len(Y))
+                #rowRange.reverse()
+                for rowIndex in rowRange:
+                    f.write("\"%s\"" % xCSVLabels[rowIndex])
+                    for colIndex in colRange:
+                        # f.write(",%f" % Z[len(Y) - rowIndex - 1][colIndex])
+                        f.write(",%f" % Z[colIndex][rowIndex])
+                    f.write("\n")
 
 def output_plot_and_table(X, Y, Z,
                title,
@@ -166,21 +183,21 @@ def output_plot_and_table(X, Y, Z,
     :return: None
     """
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12,10))
     fig.suptitle(title)
 
     ax = fig.add_subplot(1, 1, 1, projection='3d')
 
-    ax.set_xlabel(xTitle, fontsize=8)
+    ax.set_xlabel(xTitle, fontsize=11)
     ax.set_xticks(xTicks)
     ax.set_xticklabels(xLabels)
 
-    ax.set_ylabel(yTitle, fontsize=8)
+    ax.set_ylabel(yTitle, fontsize=11)
     ax.set_yticks(yTicks)
     ax.set_yticklabels(yLabels)
 
-    ax.tick_params(axis='both', which='major', labelsize=7)
-    ax.tick_params(axis='both', which='minor', labelsize=7)
+    ax.tick_params(axis='both', which='major', labelsize=11)
+    ax.tick_params(axis='both', which='minor', labelsize=11)
 
     Xinterp = linearInterp1D(X, factor)
     Yinterp = linearInterp1D(Y, factor)
@@ -188,14 +205,22 @@ def output_plot_and_table(X, Y, Z,
 
     Xinterp, Yinterp = np.meshgrid(Xinterp, Yinterp)
 
+    cmap = plt.get_cmap(colormap)
+
     surf = ax.plot_surface(Xinterp,
                            Yinterp,
                            Zinterp,
-                           cmap=plt.get_cmap(colormap),
+                           cmap=cmap,
                            linewidth=0,
                            rstride=1, cstride=1,
-                           alpha=1.0
+                           alpha=0.7
                            )
+
+    offsets = [-100, -40, 40]
+    offsets = [0, 0, 0]
+    cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='z', offset=offsets[0], cmap=cmap)
+    #cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='x', offset=offsets[1], cmap=cmap)
+    #cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='y', offset=10, cmap=cmap)
 
     if filename is None:
         plt.show(block)

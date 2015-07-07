@@ -122,5 +122,5 @@ except OSError:
     # ignore it if the directory already exists
     pass
 
-processTestData()
+#processTestData()
 processSuffledData()
