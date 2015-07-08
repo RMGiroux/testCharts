@@ -77,6 +77,8 @@ foreach my $file(@filenames) {
 my $maxSpread = 0;
 my $maxLine;
 
+print "#ns, iL, it, cc, ac, [ times ], spread, minTime\n";
+
 foreach my $key (@keys) {
     my ($ns, $iL, $it, $cc, $ac) = @$key;
 
@@ -85,9 +87,10 @@ foreach my $key (@keys) {
     die "Not enough times for @$key" unless @times == @dirs;
 
     my $spread = ($times[4]-$times[0])/$times[0] * 100;
-    my $average = average(@times[0..4]);
+    #my $average = average(@times[0..4]);
+    my $min = $times[0];
 
-    my $line = sprintf "$ns, $iL, $it, $cc, $ac, [ @times ], %f, %.6f\n", $spread, $average;
+    my $line = sprintf "$ns, $iL, $it, $cc, $ac, [ @times ], %f, %.6f\n", $spread, $min;
     print "$line";
 
     if ($spread > $maxSpread) {
