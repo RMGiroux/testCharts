@@ -108,7 +108,9 @@ for my $infile(<o*>) {
             print STDERR "Ratio $ratio for $ns, $iL, $it is strange!\n"
 	    }
 
-		$ratio = 0 if $ratio eq "NAN" || $ratio < 1;
+		$ratio = 0 if $ratio eq "NAN" || $ratio < 0.5;
+
+		$cc = 0 if $cc == 1e-7;
 
         printf "$ns, $cc, %s\n", $ratio;
 

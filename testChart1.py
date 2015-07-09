@@ -68,19 +68,27 @@ def processTestData():
 def processSuffledData():
     values = Vividict()
 
-    with open("processed_shuffle_data.out") as f:
+    filename = "processed_shuffle_data.out"
+    #filename = "processed_shuffle_test_data.out"
+
+    with open(filename) as f:
         for line in f:
             line = re.sub(r"\s*#.*", '', line)
 
             if re.search(',', line):
                 fields = line.split(",")
-                x = len(str(fields[0]))
+                # x is ns - we want system size TODO: using 9 - is a big hack here to switch from ns to system size
+                x = 9 - len(str(fields[0]))
                 # print "values[%d][%d] = %s" % (x, int(fields[1]), fields[2])
+                # y is shuffle count
                 values[x][int(fields[1])] = fields[2]
 
     X = values.keys()
     Y = values[1].keys()
     mat = np.zeros([len(Y), len(X)])
+
+    print "X is ", X
+    print "Y is ", Y
 
     try:
         for x in range(0, len(X)):
@@ -88,17 +96,19 @@ def processSuffledData():
                 value = float(values[X[x]][y])
                 print "x: %d, y: %d, X[x]=%d, value = %f" % (x, y, X[x], value)
                 # print "value = %s" % value
-                mat[y - 1, x] = value
+                mat[y, x] = value
     except:
         print "***** Error (%s: %s)" % (sys.exc_info()[0], sys.exc_info()[1])
 
+    print "values is ", values
+    print "Mat is ", mat
 
-    for factorArg in (15, ):
+    for factorArg in (20,):
         for cmap in ('jet', ):
             print "Plotting Shuffle Data at factor %d (colormap %s)" % (factorArg, cmap)
             graphSupport.output_plot_and_table(Y,
                                                X,
-                                               np.fliplr(np.flipud(mat.transpose())),#(np.flipud(mat.transpose())),#np.fliplr(np.flipud(mat.transpose())),
+                                               mat.transpose(),
                                                "Shuffle Effects",
                                                "Shuffle Factor",
                                                Y,
