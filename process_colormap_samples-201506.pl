@@ -52,7 +52,8 @@ my %timeFormatREs = (
 
 for my $infile(<oz*>) {
 	# Everything below 15 is noise - JSL
-	next unless $infile ge "oz15";
+	# oz15 has 0's, use 16 as lower bound - RMG
+	next unless $infile ge "oz16";
 
 	print STDERR "Processing $infile\n";
 	local $/;
@@ -147,6 +148,8 @@ for my $infile(<oz*>) {
 			     			  $realTimes{$ns}{$iL}{5}{$it}{$aC};
 			    printf STDERR "\tdenominator (pre-subtraction) = %f\n",
 			     			  $realTimes{$ns}{$iL}{-5}{$it}{$aC};
+			    printf STDERR "\tratio                         = %f\n",
+			     			  $ratio;
 			    print STDERR @{$lines{$keyStr}},"\n";
 			    print STDERR "-"x50,"\n\n";
 			}

@@ -219,7 +219,7 @@ def output_plot_and_table(X, Y, Z,
     offsets = [-100, -40, 40]
     offsets = [0, 0, 0]
 
-    cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='z', offset=offsets[0], cmap=cmap, stride=0.1)
+    cset = ax.contourf(Xinterp, Yinterp, Zinterp, zdir='z', offset=np.amin(Zinterp), cmap=cmap, stride=0.1)
     #cset = ax.contour(Xinterp, Yinterp, Zinterp, zdir='z', offset=offsets[0], cmap=cmap)
     #cset = ax.contour(Xinterp, Yinterp, Zinterp, zdir='z', cmap=plt.get_cmap("Greys"))
 

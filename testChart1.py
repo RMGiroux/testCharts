@@ -28,8 +28,8 @@ def processTestData():
                     = fields[3]
 
     for dataset in values.keys():
-        if dataset not in range(21, 25):
-            continue
+        #if dataset not in range(21, 25):
+        #    continue
 
         X = range(0, 9)
         Y = values[dataset].keys()
@@ -132,5 +132,5 @@ except OSError:
     # ignore it if the directory already exists
     pass
 
-#processTestData()
+processTestData()
 processSuffledData()
