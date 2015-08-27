@@ -196,8 +196,8 @@ def output_plot_and_table(X, Y, Z,
     ax.set_yticks(yTicks)
     ax.set_yticklabels(yLabels)
 
-    ax.tick_params(axis='both', which='major', labelsize=11)
-    ax.tick_params(axis='both', which='minor', labelsize=11)
+    ax.tick_params(axis='both', which='major', labelsize=6)
+    ax.tick_params(axis='both', which='minor', labelsize=6)
 
     Xinterp = linearInterp1D(X, factor)
     Yinterp = linearInterp1D(Y, factor)

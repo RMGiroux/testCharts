@@ -55,10 +55,10 @@ def processTestData():
                                                    [0, 1, 2, 3, 4, 5, 6, 7, 8],
                                                    ['$2^{-%d}$' % i for i in range(0, 9)],
                                                    ['2^-%d' % i for i in range(0, 9)],
-                                                   "Subsystem Size",
+                                                   "lg(Subsystem Size)",
                                                    Y,
-                                                   ['$2^{%d}$' % int(i) for i in Y],
-                                                   ['2^%d' % int(i) for i in Y],
+                                                   [int(i) for i in Y],
+                                                   [int(i) for i in Y],
                                                    "images/foo_%02d_%d_%s.png" % (dataset, factorArg, cmap),
                                                    "images/foo_%02d_table.png" % dataset,
                                                    "images/foo_%02d_table.csv" % dataset,
@@ -133,4 +133,4 @@ except OSError:
     pass
 
 processTestData()
-processSuffledData()
+#processSuffledData()
