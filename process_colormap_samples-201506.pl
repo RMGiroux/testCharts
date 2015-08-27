@@ -134,12 +134,14 @@ for my $infile(<oz*>) {
 			my $ratio = safeDiv($realTimes{$ns}{$iL}{5}{$it}{$aC} - $averageBaseTime,
 			                    $realTimes{$ns}{$iL}{-5}{$it}{$aC} - $averageBaseTime);
 
-			printf "$ns, $iL, $it, %s\n", $ratio;
-
-			if ($ratio<0 || $ratio>15) {
+			if ($ratio<0.5 || $ratio>15) {
 			    print STDERR "********** Ratio $ratio for $ns, $iL, $it is strange!\n";
 			    ++$complaints;
 			}
+
+			$ratio = 0.5 if $ratio < 0.5;
+
+			printf "$ns, $iL, $it, %s\n", $ratio;
 
 			if ($complaints) {
 			    printf STDERR "\taverageBaseTime               = %f\n",
