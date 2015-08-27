@@ -15,10 +15,16 @@ class Vividict(dict):
 # Tell NumPy to print all of each array rather than eliding some...
 np.set_printoptions(threshold=np.nan)
 
-def processTestData():
+def processTestData(file, subheading, outdir):
     values = Vividict()
 
-    with open("processed_test_data.out") as f:
+    try:
+        os.mkdir(outdir)
+    except OSError:
+        # ignore it if the directory already exists
+        pass
+
+    with open(file) as f:
         for line in f:
             line = re.sub(r"\s*#.*", '', line)
 
@@ -46,11 +52,11 @@ def processTestData():
 
         for factorArg in (15, ):
             for cmap in ('jet', ):
-                print "Plotting dataset %d at factor %d (colormap %s)" % (dataset, factorArg, cmap)
+                print "Plotting dataset %d at factor %d (colormap %s) (for %s)" % (dataset, factorArg, cmap, subheading)
                 graphSupport.output_plot_and_table(X,
                                                    Y,
                                                    mat,
-                                                   "Problem Size = $2^{%d}$" % dataset,
+                                                   "Problem Size = $2^{%d}$\n%s" % (dataset, subheading),
                                                    "Temporal Locality",
                                                    [0, 1, 2, 3, 4, 5, 6, 7, 8],
                                                    ['$2^{-%d}$' % i for i in range(0, 9)],
@@ -59,9 +65,9 @@ def processTestData():
                                                    Y,
                                                    [int(i) for i in Y],
                                                    [int(i) for i in Y],
-                                                   "images/foo_%02d_%d_%s.png" % (dataset, factorArg, cmap),
-                                                   "images/foo_%02d_table.png" % dataset,
-                                                   "images/foo_%02d_table.csv" % dataset,
+                                                   "%s/foo_%02d_%d_%s.png" % (outdir,dataset, factorArg, cmap),
+                                                   "%s/foo_%02d_table.png" % (outdir,dataset),
+                                                   "%s/foo_%02d_table.csv" % (outdir,dataset),
                                                    factor=factorArg,
                                                    colormap=cmap)
 
@@ -132,5 +138,6 @@ except OSError:
     # ignore it if the directory already exists
     pass
 
-processTestData()
+processTestData("input-data-rerun-20150827/processed_test_data-with-allocators.out", "With Allocators", "images-with-allocators")
+processTestData("input-data-rerun-20150827/processed_test_data-without-allocators.out", "Without Allocators", "images-without-allocators")
 #processSuffledData()
