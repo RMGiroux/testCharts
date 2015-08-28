@@ -139,5 +139,5 @@ except OSError:
     pass
 
 processTestData("input-data-rerun-20150827/processed_test_data-with-allocators.out", "With Allocators", "images-with-allocators")
-processTestData("input-data-rerun-20150827/processed_test_data-without-allocators.out", "Without Allocators", "images-without-allocators")
+#processTestData("input-data-rerun-20150827/processed_test_data-without-allocators.out", "Without Allocators", "images-without-allocators")
 #processSuffledData()
