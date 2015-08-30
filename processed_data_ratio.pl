@@ -9,7 +9,8 @@ my $debug = 1;
 
 my %files = (
 	WITH => 'processed_test_data-with-allocators.out'
-      , WITHOUT => 'processed_test_data-without-allocators-without-0.out'
+  , WITHOUT => 'processed_test_data-without-allocators.out'
+#  , WITHOUT => 'processed_test_data-without-allocators-without-0.out'
 );
 
 my %values;
