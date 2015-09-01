@@ -15,7 +15,7 @@ class Vividict(dict):
 # Tell NumPy to print all of each array rather than eliding some...
 np.set_printoptions(threshold=np.nan)
 
-def processTestData(file, subheading, outdir):
+def processTestData(file, subheading, outdir, iteration_factor=1):
     values = Vividict()
 
     try:
@@ -33,6 +33,8 @@ def processTestData(file, subheading, outdir):
                 values[int(fields[0])][int(fields[1])][int(fields[2])] \
                     = fields[3]
 
+    print "values are ", values
+
     for dataset in values.keys():
         #if dataset not in range(21, 25):
         #    continue
@@ -40,15 +42,20 @@ def processTestData(file, subheading, outdir):
         X = range(0, 9)
         Y = values[dataset].keys()
 
+
+        print "X is ", X
+        print "Y is ", Y
+
         mat = np.zeros([len(Y), len(X)])
 
         try:
             for x in X:
                 for y in Y:
-                    mat[y, x] = values[dataset][y][2 ** x]
+                    mat[y, x] = values[dataset][y][iteration_factor * 2 ** x]
         except:
             print "***** Error (%s: %s) for dataset %s" % (sys.exc_info()[0], sys.exc_info()[1], dataset)
 
+        print "mat is ", mat
 
         for factorArg in (15, ):
             for cmap in ('jet', ):
@@ -138,6 +145,6 @@ except OSError:
     # ignore it if the directory already exists
     pass
 
-#processTestData("input-data-rerun-20150827/processed_test_data-with-allocators.out", "With Allocators", "images-with-allocators")
-processTestData("input-data-rerun-20150827/processed_test_data-without-allocators.out", "Without Allocators", "images-without-allocators")
+processTestData("input-data-10x-20150831/processed_test_data-with-allocators.out", "With Allocators", "images-10x-with-allocators", 10)
+#processTestData("input-data-rerun-20150827/processed_test_data-without-allocators.out", "Without Allocators", "images-without-allocators", 10)
 #processSuffledData()
