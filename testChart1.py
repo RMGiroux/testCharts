@@ -147,5 +147,6 @@ except OSError:
 
 #processTestData("input-data-10x-20150831/processed_test_data-with-allocators.out", "With Allocators", "images-10x-with-allocators", 10)
 #processTestData("input-data-10x-20150831/processed_test_data-without-allocators.out", "Without Allocators", "images-10x-without-allocators", 10)
-processTestData("input-data-10x-20150831/processed_data_ratio.out", "Ratio Without/With Allocators", "images-10x-ratio", 10)
+#processTestData("input-data-10x-20150831/processed_data_ratio.out", "Ratio Without/With Allocators", "images-10x-ratio", 10)
+processTestData("input-data-10x-20150908/processed_test_data-with-allocators.out", "With Allocators", "images-10x-with-allocators", 10)
 #processSuffledData()
